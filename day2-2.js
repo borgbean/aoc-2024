@@ -12,11 +12,26 @@ export default function day2() {
     return safeCount;
 }
 
-function doIt(i, line, swapped) {
-    let increasingCount = (line.at(-1) > line[i-1]) + (line[i] > line[i-1]) + (line.at(-1) > line.at(-2));
-    let decreasingCount = 3 - increasingCount;
+function isIncreasing(line) {
+    let increasingCount = 0;
+    let decreasingCount = 0;
+    for(let i = 1; i < line.length && i < 5; ++i) {
+        if((line[i] > line[i-1])) { ++increasingCount }
+        else { ++decreasingCount; }
+    }
+    if(increasingCount === decreasingCount) {
+        for(let i = 2; i < line.length && i < 6; ++i) {
+            if((line[i] > line[i-2])) { ++increasingCount }
+            else { ++decreasingCount; }
+        }
+        if(increasingCount === decreasingCount) { return true; }
+    }
 
-    let increasing = increasingCount > decreasingCount;
+    return increasingCount > decreasingCount;
+}
+
+function doIt(i, line, swapped) {
+    let increasing = isIncreasing(line, i);
 
     for(; i < line.length; ++i) {
         let curIncreasing = line[i] > line[i-1];
