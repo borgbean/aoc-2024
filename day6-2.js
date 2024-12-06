@@ -15,6 +15,7 @@ export default function day6() {
                 if(input[i][j] === '^') {
                     startI = i;
                     startJ = j;
+                    done = true;
                     break;
                 }
             }
