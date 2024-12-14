@@ -52,9 +52,9 @@ export default function day14(drawIt) {
         }
         if(curRunLen > MIN_RUN_WID) { ++runs; }
         if(runs > 8) {
-            if(!drawIt) { return i; }
+            if(drawIt) { drawGrid(); }
             
-            drawGrid();
+            return i;
         }
     }
 
