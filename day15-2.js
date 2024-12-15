@@ -74,19 +74,16 @@ export default function day15() {
 
     function shiftBox(dryRun, boxL_y, boxL_x, boxR_y, boxR_x, yOff, xOff) {
         let q = [[boxL_y, boxL_x, '['], [boxR_y, boxR_x, ']']];
-        let q2 = [];
         let seen = new Set([toDp(boxL_y, boxL_x), toDp(boxR_y, boxR_x)]);
-        let placed = new Set();
 
+        if(!dryRun) {
+            grid[boxL_y][boxL_x] = '.';
+            grid[boxR_y][boxR_x] = '.';
+        }
         
         while(q.length) {
             let [moveY, moveX, val] = q.pop();
             
-            if(!dryRun) {
-                if(!placed.has(toDp(moveX, moveY))) 
-                grid[moveY][moveX] = '.';
-                
-            }
             let newY = moveY + yOff;
             let newX = moveX + xOff;
             if(grid[newY][newX] === '.') {
@@ -99,18 +96,17 @@ export default function day15() {
                     seen.add(toDp(box2L_y, box2L_x));
                     seen.add(toDp(box2R_y, box2R_x));
     
-                    q2.push([box2L_y, box2L_x,'['],[box2R_y, box2R_x,']']);
+                    q.push([box2L_y, box2L_x,'['],[box2R_y, box2R_x,']']);
+
+                    if(!dryRun) {
+                        grid[box2L_y][box2L_x] = '.';
+                        grid[box2R_y][box2R_x] = '.';
+                    }
                 }
             }
 
             if(!dryRun) {
-                placed.add(toDp(newX, newY));
-
                 grid[newY][newX] = val;
-            }
-
-            if(!q.length) {
-                [q, q2] = [q2, q];
             }
         }
         return true;
