@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body style="margin: 0">
+    <canvas></canvas>
+
+    <textarea type="text"></textarea>
+    <button>start</button>
+    <input type="range" min="1" max="100" value="20" id="SPEED" />
+
+    <script type="text/javascript" src="vis15.js"></script>
+    <script>
+        let canvas = document.querySelector('canvas');
+
+        let ctxt = canvas.getContext('2d');
+
+                
+        let height = window.innerHeight;
+        let width = height*1.2;
+        canvas.width = width;
+        canvas.height = height;
+
+        document.querySelector('button').addEventListener('click', enterLoop);
+
+        document.querySelector('input').addEventListener('input', e => {
+            if(!curState) {
+                return;
+            }
+            setSpeed(curState);
+        })
+
+        function setSpeed(state) {
+            let val = Number(document.querySelector('input').value);
+
+            if(val < 50) {
+                state.dwell = 50 - val;
+                state.skip = 0;
+            } else {
+                state.dwell = 0;
+                state.skip = val - 50;
+            }
+        }
+
+        let curState = null;
+
+        function enterLoop() {
+            if(curState !== null) {
+                curState.running = false;
+            }
+
+            curState = {
+                frame: 0,
+                gen: day15(getInput()),
+                skip: 0,
+                dwell: 5,
+                curDwell: 0,
+                drawState: {},
+                running: true,
+                lastData: null
+            };
+            setSpeed(curState);
+            loop(curState);
+        }
+        function loop(state) {
+            if(!state.running) { return; }
+            if(state.curDwell < state.dwell) {
+                ++state.curDwell;
+                return nextFrame();
+            }
+            state.curDwell = 0;
+            
+            let next = state.gen.next();
+            for(let i = 0; !next.done && i < state.skip; ++i) {
+                next = state.gen.next();
+            }
+            let data = next.value;
+            if(next.done) { 
+                data = state.lastData;
+            }
+            drawFrame(data, state.drawState);
+            ++state.frame;
+
+            state.lastData = data;
+            
+            nextFrame();
+
+            function nextFrame() { window.requestAnimationFrame(loop.bind(null, state)); }
+        }
+        function drawFrame(grid, drawState) {
+            let robotColors = ['red', 'white', 'purple'];
+            if(!drawState.initialized) {
+                drawState.curRobotColor = 0;
+                drawState.initialized = true;
+                drawState.characterSizes = new Map();
+            }
+            let curRobotColor = drawState.curRobotColor++;
+            
+            let squareW = width/grid[0].length;
+            let squareH = height/grid.length;
+
+            ctxt.fillStyle = 'black';
+            ctxt.fillRect(0, 0, width, height);
+
+
+        
+            for(let i = 0; i < grid.length; ++i) {
+                for(let j = 0; j < grid[0].length; ++j) {
+                    if(grid[i][j] === '.') { continue; }
+                    let color;
+                    let text = grid[i][j];
+
+                    switch(grid[i][j]) {
+                        case '@':
+                            color = robotColors[curRobotColor % robotColors.length];
+                            text = '🤖';
+                            break;
+                        case '#':
+                            color = 'green';
+                            text = '🧱';
+                            break;
+                        case '[':
+                            text = '👉';
+                            color = 'brown';
+                            break;
+                        case ']':
+                            text = '👈';
+                            color = 'brown';
+                            break;
+                    }
+                    ctxt.fillStyle = color;
+
+                    ctxt.fillRect(squareW*j, squareH*i, squareW, squareH);
+
+                    ctxt.font = `${squareW*.7}px Consolas`;
+                    ctxt.textBaseline = 'top';
+
+                    let [charW, charH, leftOffset, topOffset] = getCharacterSize(text);
+                    ctxt.fillText(text, squareW*j + squareW/2 - charW/2, squareH*i + squareH/2 - charH/2 + topOffset);
+                }
+            }
+
+            function getCharacterSize(text) {
+                if(drawState.characterSizes.has(text)) { return drawState.characterSizes.get(text); }
+                let metrics = ctxt.measureText(text);
+
+                let actualHeight = metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent;
+                let width = metrics.width;
+    
+                let topOffset = metrics.actualBoundingBoxAscent;
+                let leftOffset = metrics.actualBoundingBoxLeft;
+    
+                let ret = [width, actualHeight, leftOffset, topOffset];
+                drawState.characterSizes.set(text, ret);
+                return ret;
+            }
+        }
+
+
+        function getInputElem() {
+            return document.querySelector('textarea');
+        }
+        function getInput() {
+            return getInputElem().value;
+        }
+        
+
+
+
+
+
+
+
+
+
+
+    </script>
+</body>
+
+</html>
