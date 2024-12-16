@@ -99,8 +99,6 @@ export default function day16() {
 
     function dfs(dpIdx) {
         let realIdx = Math.floor(dpIdx/4);
-        let realY = Math.floor(realIdx / input[0].length)
-        let realX = Math.floor(realIdx % input[0].length)
         
         if(!bestPathEligible[realIdx]) { ++count; }
         bestPathEligible[realIdx] = true;
