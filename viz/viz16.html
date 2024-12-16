@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body style="margin: 0">
+    <canvas></canvas>
+
+    <textarea type="text"></textarea>
+    <button>start</button>
+    <input type="range" min="1" max="100" value="20" id="SPEED" />
+
+    <script type="text/javascript" src="vis16.js"></script>
+    <script>
+        let canvas = document.querySelector('canvas');
+
+        let ctxt = canvas.getContext('2d');
+
+                
+        let height = window.innerHeight;
+        let width = height*1.2;
+        canvas.width = width;
+        canvas.height = height;
+
+        document.querySelector('button').addEventListener('click', enterLoop);
+
+        document.querySelector('input').addEventListener('input', e => {
+            if(!curState) {
+                return;
+            }
+            setSpeed(curState);
+        })
+
+        function setSpeed(state) {
+            let val = Number(document.querySelector('input').value);
+
+            if(val < 50) {
+                state.dwell = 50 - val;
+                state.skip = 0;
+            } else {
+                state.dwell = 0;
+                state.skip = val - 50;
+            }
+        }
+
+        let curState = null;
+
+        function enterLoop() {
+            if(curState !== null) {
+                curState.running = false;
+            }
+
+            curState = {
+                frame: 0,
+                gen: day16(getInput()),
+                skip: 0,
+                dwell: 5,
+                curDwell: 0,
+                drawState: {},
+                running: true,
+                lastData: null
+            };
+            setSpeed(curState);
+            loop(curState);
+        }
+        function loop(state) {
+            if(!state.running) { return; }
+            if(state.curDwell < state.dwell) {
+                ++state.curDwell;
+                return nextFrame();
+            }
+            state.curDwell = 0;
+            
+            let next = state.gen.next();
+            for(let i = 0; !next.done && i < state.skip; ++i) {
+                next = state.gen.next();
+            }
+            let data = next.value;
+            if(next.done) { 
+                data = state.lastData;
+            }
+            drawFrame(ctxt, width, height, data, state.drawState);
+            ++state.frame;
+
+            state.lastData = data;
+            
+            nextFrame();
+
+            function nextFrame() { window.requestAnimationFrame(loop.bind(null, state)); }
+        }
+
+
+        function getInputElem() {
+            return document.querySelector('textarea');
+        }
+        function getInput() {
+            return getInputElem().value;
+        }
+        
+
+
+    </script>
+</body>
+
+</html>
