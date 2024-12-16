@@ -102,7 +102,7 @@ export default function day16() {
         let realY = Math.floor(realIdx / input[0].length)
         let realX = Math.floor(realIdx % input[0].length)
         
-        if(!bestPathEligible[realIdx]) {if(input[realY][realX] !== '.') console.log(input[realY][realX]); ++count; }
+        if(!bestPathEligible[realIdx]) { ++count; }
         bestPathEligible[realIdx] = true;
 
 
