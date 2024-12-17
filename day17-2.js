@@ -17,49 +17,27 @@ export default function day17() {
 
     let dataSection = programS.split(': ')[1].split(',').map(Number);
 
-    let initialRegFile = {...registerFile};
+    return dfs(0n, 0);
 
-    for(let i = 359493309n; i < Infinity; i += 1n<<26n) {
-        registerFile = {...initialRegFile};
-        registerFile.A = i;
+    function dfs(curNum, i) {
+        if(i >= dataSection.length) { return curNum; }
 
-        let outputs = 0;
+        let curPow = 3n;
+        for(let ii = 0n; ii < 8n; ++ii) {
+            let tmp = (curNum<<curPow) + ii;
 
-        let pc = 0;
-        while(pc < dataSection.length) {
-            let [instruction, operand] = [dataSection[pc], dataSection[pc+1]];
-    
-            if(instruction === 0) {
-                registerFile.A = registerFile.A/2n**getCombo(operand);
-            } else if(instruction === 1) {
-                registerFile.B ^= BigInt(operand);
-            } else if(instruction === 2) {
-                registerFile.B = getCombo(operand) % 8n;
-            } else if(instruction === 3) {
-                if(registerFile.A !== 0) {
-                    pc = operand - 2;
-                }
-            } else if(instruction === 4) {
-                registerFile.B ^= registerFile.C;
-            } else if(instruction === 5) {
-                let val = Number(getCombo(operand) % 8n);
-                if(outputs === dataSection.length || dataSection[outputs] !== val) {
-                    break;
-                }
-                ++outputs;
-            } else if(instruction === 6) {
-                registerFile.B = registerFile.A/2n**getCombo(operand);
-            } else if(instruction === 7) {
-                registerFile.C = registerFile.A/2n**getCombo(operand);
+            let b = (tmp & 7n) ^ 1n;
+            let c = tmp / (2n**b);
+            let b2 = b ^ c ^ 5n;
+            let out = b2 & 7n
+            let num = Number(out);
+            if(num === dataSection.at(-1 - i)) {
+                let ret = dfs(tmp, i+1);
+                if(ret !== false) { return ret; }
             }
-            pc += 2;
         }
-    
-        if(outputs === dataSection.length) {
-            return i;
-        }
+        return false;
     }
-
 
     function getCombo(operand) {
         if(operand <= 3) {
