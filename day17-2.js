@@ -19,11 +19,12 @@ export default function day17() {
 
     let initialRegFile = {...registerFile};
 
-    for(let i = 35949330n; i < Infinity; i += 1n<<26n) {
+    for(let i = 359493309n; i < Infinity; i += 1n<<26n) {
         registerFile = {...initialRegFile};
         registerFile.A = i;
 
-        let outputs = [];
+        let outputs = 0;
+
         let pc = 0;
         while(pc < dataSection.length) {
             let [instruction, operand] = [dataSection[pc], dataSection[pc+1]];
@@ -42,10 +43,10 @@ export default function day17() {
                 registerFile.B ^= registerFile.C;
             } else if(instruction === 5) {
                 let val = Number(getCombo(operand) % 8n);
-                if(outputs.length === dataSection.length || dataSection[outputs.length] !== val) {
+                if(outputs === dataSection.length || dataSection[outputs] !== val) {
                     break;
                 }
-                outputs.push(val);
+                ++outputs;
             } else if(instruction === 6) {
                 registerFile.B = registerFile.A/2n**getCombo(operand);
             } else if(instruction === 7) {
@@ -54,7 +55,7 @@ export default function day17() {
             pc += 2;
         }
     
-        if(outputs.length === dataSection.length) {
+        if(outputs === dataSection.length) {
             return i;
         }
     }
