@@ -14,14 +14,6 @@ const keypadPositions = new Map([
     ['A', [3, 2]]
 ]);
 
-const directionalPositions = new Map([
-    ['^', [0, 1]],
-    ['A', [0, 2]],
-    ['<', [1, 0]],
-    ['v', [1, 1]],
-    ['>', [1, 2]],
-]);
-
 let UP = [0, 1];
 let ACTIVATE = [0, 2];
 let LEFT = [1, 0];
@@ -46,7 +38,8 @@ export default function day21() {
         }
         let count = 0;
         for (let chr of line) {
-            count += press(state, chr);
+            count += directionalMove(state, 0, keypadPositions.get(chr), 1);
+
         }
         ret += count * parseInt(line, 10);
     }
@@ -54,54 +47,6 @@ export default function day21() {
 
     function copyPositions(positions) {
         return positions.map(x => x.slice());
-    }
-
-    function press(state, chr) {
-        let [y, x] = state.positions[0];
-
-        let [targetY, targetX] = keypadPositions.get(chr);
-
-        //if in first column, and going to last row
-        //OR in last row, going to first column... blah
-
-        let stepsA = Infinity;
-        let positionsA;
-        if (!(x === 0 && targetY === 3)) {
-            let tmp = state.positions;
-            state.positions = positionsA = copyPositions(state.positions);
-            stepsA = 0;
-
-            stepsA += directionalMove(state, 1, targetY > y ? DOWN : UP, Math.abs(y - targetY));
-            stepsA += directionalMove(state, 1, targetX > x ? RIGHT : LEFT, Math.abs(x - targetX));
-            stepsA += directionalMove(state, 1, ACTIVATE, 1);
-
-            state.positions = tmp;
-        }
-        let stepsB = Infinity;
-        let positionsB
-        if (!(y === 3 && targetX === 0)) {
-            let tmp = state.positions;
-            state.positions = positionsB = copyPositions(state.positions);
-            stepsB = 0;
-
-            stepsB += directionalMove(state, 1, targetX > x ? RIGHT : LEFT, Math.abs(x - targetX));
-            stepsB += directionalMove(state, 1, targetY > y ? DOWN : UP, Math.abs(y - targetY));
-            stepsB += directionalMove(state, 1, ACTIVATE, 1);
-
-            state.positions = tmp;
-        }
-
-        if (stepsA < stepsB) {
-            state.positions = positionsA;
-        } else {
-            state.positions = positionsB;
-        }
-        state.positions[0] = [targetY, targetX];
-
-        let steps = Math.min(stepsA, stepsB);
-
-
-        return steps;
     }
 
     function directionalMove(state, robotNum, target, count) {
@@ -113,7 +58,7 @@ export default function day21() {
         let dpIdx = 
                     count*5*5*state.positions.length*5*5*5*5
                         + state.positions.slice(robotNum, robotNum + 2).reduce((acc, x, idx) => acc+(25*(idx))+x[0]*5+x[1], 0)*5*5*state.positions.length
-                        + (robotNum-1)*5*5
+                        + robotNum*5*5
                         + target[0]*5
                         + target[1];
 
@@ -128,36 +73,40 @@ export default function day21() {
             return steps;
         }
         
+
         let [y, x] = state.positions[robotNum];
-        
+
         let [targetY, targetX] = target;
 
-        //if first row && target === first column
-        //OR first column && target === first row
+        //if in first column, and going to last row
+        //OR in last row, going to first column... blah
+
+        let verticalFirstAllowed = (robotNum === 0 && !(x === 0 && targetY === 3)) || (robotNum > 0 && !(x === 0 && targetY === 0));
+        let horizontalFirstAllowed = (robotNum === 0 && !(y === 3 && targetX === 0)) || (robotNum > 0 && !(y === 0 && targetX === 0));
 
         let stepsA = Infinity;
         let positionsA;
-        if (!(x === 0 && targetY === 0)) {
+        if (verticalFirstAllowed) {
             let tmp = state.positions;
             state.positions = positionsA = copyPositions(state.positions);
             stepsA = 0;
 
-            stepsA += directionalMove(state, robotNum + 1, targetY > y ? DOWN : UP, Math.abs(y - targetY));
-            stepsA += directionalMove(state, robotNum + 1, targetX > x ? RIGHT : LEFT, Math.abs(x - targetX));
-            stepsA += directionalMove(state, robotNum + 1, ACTIVATE, count)
+            stepsA += directionalMove(state, robotNum+1, targetY > y ? DOWN : UP, Math.abs(y - targetY));
+            stepsA += directionalMove(state, robotNum+1, targetX > x ? RIGHT : LEFT, Math.abs(x - targetX));
+            stepsA += directionalMove(state, robotNum+1, ACTIVATE, count);
 
             state.positions = tmp;
         }
         let stepsB = Infinity;
         let positionsB;
-        if (!(y === 0 && targetX === 0)) {
+        if (horizontalFirstAllowed) {
             let tmp = state.positions;
             state.positions = positionsB = copyPositions(state.positions);
             stepsB = 0;
 
-            stepsB += directionalMove(state, robotNum + 1, targetX > x ? RIGHT : LEFT, Math.abs(x - targetX));
-            stepsB += directionalMove(state, robotNum + 1, targetY > y ? DOWN : UP, Math.abs(y - targetY));
-            stepsB += directionalMove(state, robotNum + 1, ACTIVATE, count);
+            stepsB += directionalMove(state, robotNum+1, targetX > x ? RIGHT : LEFT, Math.abs(x - targetX));
+            stepsB += directionalMove(state, robotNum+1, targetY > y ? DOWN : UP, Math.abs(y - targetY));
+            stepsB += directionalMove(state, robotNum+1, ACTIVATE, count);
 
             state.positions = tmp;
         }
@@ -167,7 +116,6 @@ export default function day21() {
         } else {
             state.positions = positionsB;
         }
-        
         state.positions[robotNum] = target.slice();
 
         let steps = Math.min(stepsA, stepsB);
