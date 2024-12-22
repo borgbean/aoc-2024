@@ -7,6 +7,7 @@ export default function day22() {
 
     let dp = new Uint32Array(19**4);
     let dp2 = new Uint16Array(19**4);
+    let prevSalePrices = new Int16Array(4);
 
     let lineNo = 0;
     for(let secretNumS of input) {
@@ -14,7 +15,6 @@ export default function day22() {
         let secretNum = Number(secretNumS);
 
         let prevSalePrice = null;
-        let prevSalePrices = [];
         let prevSalePriceIdx = 0;
 
         for(let i = 0; i < 2000; ++i) {
@@ -24,14 +24,14 @@ export default function day22() {
 
             let sellPrice = secretNum % 10;
 
-            if(prevSalePrice !== null) {
-                prevSalePrices[prevSalePriceIdx++] = sellPrice-prevSalePrice;
-                prevSalePriceIdx = prevSalePriceIdx%4;
+            if(i > 0) {
+                prevSalePrices[prevSalePriceIdx] = sellPrice-prevSalePrice;
+                prevSalePriceIdx = ++prevSalePriceIdx&3;
             }
 
             prevSalePrice = sellPrice;
 
-            if(prevSalePrices.length >= 4) {
+            if(i >= 4) {
                 let dpIdx = getDpIdx(prevSalePrices, prevSalePriceIdx);
                 
                 if(dp2[dpIdx] !== lineNo) {
@@ -56,8 +56,8 @@ export default function day22() {
 function getDpIdx(sellPrices, ringBufStart) {
     let idx = 0;
     let base = 1;
-    for(let i = 0; i < sellPrices.length; ++i) {
-        idx += base*(sellPrices[(i + ringBufStart) % sellPrices.length]+9);
+    for(let i = 0; i < 4; ++i) {
+        idx += base*(sellPrices[(i + ringBufStart) & 3]+9);
         base *= 19;
     }
 
