@@ -14,7 +14,7 @@ export default function day22() {
         ++lineNo;
         let secretNum = Number(secretNumS);
 
-        let prevSalePrice = null;
+        let prevSalePrice = secretNum%10;
         let prevSalePriceIdx = 0;
 
         for(let i = 0; i < 2000; ++i) {
@@ -24,14 +24,12 @@ export default function day22() {
 
             let sellPrice = secretNum % 10;
 
-            if(i > 0) {
-                prevSalePrices[prevSalePriceIdx] = sellPrice-prevSalePrice;
-                prevSalePriceIdx = ++prevSalePriceIdx&3;
-            }
+            prevSalePrices[prevSalePriceIdx] = sellPrice-prevSalePrice;
+            prevSalePriceIdx = ++prevSalePriceIdx&3;
 
             prevSalePrice = sellPrice;
 
-            if(i >= 4) {
+            if(i >= 3) {
                 let dpIdx = getDpIdx(prevSalePrices, prevSalePriceIdx);
                 
                 if(dp2[dpIdx] !== lineNo) {
