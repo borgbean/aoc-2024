@@ -11,7 +11,7 @@ export default function day22() {
     let lineNo = 0;
     for(let secretNumS of input) {
         ++lineNo;
-        let secretNum = secretNumS;
+        let secretNum = Number(secretNumS);
 
         let prevSalePrice = null;
         let prevSalePrices = [];
