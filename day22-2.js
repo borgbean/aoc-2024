@@ -5,8 +5,8 @@ const MASK = (1<<24)-1
 export default function day22() {
     let input = readInputToLines('inputs/22.txt');
 
-    let dp = new Uint32Array(104976);
-    let dp2 = new Uint16Array(104976);
+    let dp = new Uint32Array(19**4);
+    let dp2 = new Uint16Array(19**4);
 
     let lineNo = 0;
     for(let secretNumS of input) {
