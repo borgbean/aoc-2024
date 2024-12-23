@@ -33,7 +33,6 @@ export default function day22() {
                 let dpIdx = getDpIdx(prevSalePrices, prevSalePriceIdx);
                 
                 if(dp2[dpIdx] !== lineNo) {
-                    dp[dpIdx] = dp[dpIdx] || 0;
                     dp[dpIdx] += sellPrice;
                     dp2[dpIdx] = lineNo;
                 }
