@@ -44,9 +44,10 @@ export default function day23() {
             let v2 = list[i];
             let match = true;
 
+            //already visited this in the out Object.keys loop....
             if(v2 < v0) { continue; }
 
-            for(let j = 0; j < path.length; ++j) {
+            for(let j = 1; j < path.length; ++j) {
                 if(!adjList[path[j]].includes(v2)) { match = false; break; }
             }
             if(!match) { continue; }
