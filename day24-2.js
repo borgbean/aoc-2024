@@ -39,7 +39,6 @@ export default function day24() {
 
     let usedUp = new Set();
 
-    // let result = dfs(`cvp,mkk,qbw,wcb,wjb,z10,z14,z34`.split(','), new Set());
     let result = dfs(maybeBrokenArr, new Set());
     return result.sort().join(',');
 
