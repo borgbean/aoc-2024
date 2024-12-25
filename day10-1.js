@@ -22,7 +22,7 @@ export default function day10() {
     function score(startI, startJ) {
         let q = [[startI, startJ]];
         let q2 = [];
-         let dist = 0;
+        let dist = 0;
         let score = 0;
 
         ++curVisitedIdx;
@@ -43,7 +43,6 @@ export default function day10() {
             }
 
             if(!q.length) {
-                ++curVisitedIdx;
                 if(dist === 8) { break; }
                 [q, q2] = [q2, q];
                 ++dist;

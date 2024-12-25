@@ -10,7 +10,7 @@ export default function day17() {
     };
 
     let [regsS, programS] = input.split(/(?:\r?\n){2}/);
-    for(let line of regsS.split('\n')) {
+    for(let line of regsS.split(/\r?\n/)) {
         let [_, reg, val] = line.match(/Register (\w+): (\d+)$/);
         registerFile[reg] = Number(val);
     }

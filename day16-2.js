@@ -23,7 +23,7 @@ export default function day16() {
     let seen = new Array(input.length*input[0].length*4).fill(null);
     let h = new MinHeapMap([], 0, true, cmp, false);
 
-    seen[startY*input[0].length*4 + startX + 1] = [0, []];
+    seen[startY*input[0].length*4 + startX*4 + 1] = [0, []];
 
     //cost, x, y, direction
     h.push([0, startX, startY, 1]);
