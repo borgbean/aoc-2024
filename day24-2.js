@@ -22,8 +22,8 @@ export default function day24() {
     let definitelyBrokenIndexes = [...definitelyBroken].map(x => maybeBrokenArr.findIndex(z => z === x));
 
     // console.log(...maybeBrokenMap.entries())
-    // console.log(definitelyBroken)
-    // console.log(maybeBrokenMap)
+    console.log(definitelyBroken)
+    console.log(maybeBrokenMap)
 
 
     let result = dfs(maybeBrokenArr, new Set());
@@ -55,20 +55,14 @@ export default function day24() {
 
                 let v1 = maybeBroken[i];
                 let v2 = maybeBroken[j];
-
-                let tmp = adjList[v1];
-                let tmp2 = adjList[v2];
-                adjList[v1] = tmp2;
-                adjList[v2] = tmp;
+                [adjList[v1], adjList[v2]] = [adjList[v2], adjList[v1]];
 
                 let ret = dfs(maybeBroken, used);
                 if(ret) {
                     return ret;
                 }
 
-                
-                adjList[v2] = tmp2;
-                adjList[v1] = tmp;
+                [adjList[v1], adjList[v2]] = [adjList[v2], adjList[v1]];
 
                 used.delete(j);
             }
