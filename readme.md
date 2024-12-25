@@ -16,30 +16,29 @@ Performance results for this year:
 ├────────────┼────────┼────────┤
 │ Problem 1  │ '1ms'  │ '0ms'  │
 │ Problem 2  │ '1ms'  │ '0ms'  │
-│ Problem 3  │ '0ms'  │ '1ms'  │
+│ Problem 3  │ '1ms'  │ '0ms'  │
 │ Problem 4  │ '5ms'  │ '0ms'  │
 │ Problem 5  │ '1ms'  │ '3ms'  │
-│ Problem 6  │ '0ms'  │ '25ms' │
-│ Problem 7  │ '3ms'  │ '44ms' │
-│ Problem 8  │ '0ms'  │ '1ms'  │
-│ Problem 9  │ '1ms'  │ '17ms' │
-│ Problem 10 │ '7ms'  │ '7ms'  │
-│ Problem 11 │ '1ms'  │ '28ms' │
-│ Problem 12 │ '7ms'  │ '11ms' │
-│ Problem 13 │ '0ms'  │ '1ms'  │
-│ Problem 14 │ '0ms'  │ '87ms' │
+│ Problem 6  │ '1ms'  │ '25ms' │
+│ Problem 7  │ '3ms'  │ '29ms' │
+│ Problem 8  │ '0ms'  │ '0ms'  │
+│ Problem 9  │ '2ms'  │ '15ms' │
+│ Problem 10 │ '7ms'  │ '8ms'  │
+│ Problem 11 │ '1ms'  │ '29ms' │
+│ Problem 12 │ '7ms'  │ '12ms' │
+│ Problem 13 │ '0ms'  │ '0ms'  │
+│ Problem 14 │ '0ms'  │ '91ms' │
 │ Problem 15 │ '1ms'  │ '4ms'  │
-│ Problem 16 │ '10ms' │ '10ms' │
+│ Problem 16 │ '10ms' │ '11ms' │
 │ Problem 17 │ '0ms'  │ '0ms'  │
-│ Problem 18 │ '0ms'  │ '3ms'  │
-│ Problem 19 │ '7ms'  │ '5ms'  │
-│ Problem 20 │ '2ms'  │ '14ms' │
+│ Problem 18 │ '1ms'  │ '2ms'  │
+│ Problem 19 │ '9ms'  │ '2ms'  │
+│ Problem 20 │ '4ms'  │ '20ms' │
 │ Problem 21 │ '0ms'  │ '5ms'  │
-│ Problem 22 │ '56ms' │ '29ms' │
-│ Problem 23 │ '1ms'  │ '18ms' │
-│ Problem 24 │ '1ms'  │ '6ms'  │
-│ Problem 25 │ '1ms'  │ '0ms'  │
+│ Problem 22 │ '23ms' │ '30ms' │
+│ Problem 23 │ '2ms'  │ '18ms' │
+│ Problem 24 │ '0ms'  │ '8ms'  │
+│ Problem 25 │ '2ms'  │ '0ms'  │
 └────────────┴────────┴────────┘
-bench.mjs:37
-Total time: 425
+Total time: 394
 ```
