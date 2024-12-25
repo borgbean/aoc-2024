@@ -21,6 +21,11 @@ export default function day24() {
     let maybeBrokenArr = [...maybeBrokenMap.keys()];
     let definitelyBrokenIndexes = [...definitelyBroken].map(x => maybeBrokenArr.findIndex(z => z === x));
 
+    // console.log(...maybeBrokenMap.entries())
+    // console.log(definitelyBroken)
+    // console.log(maybeBrokenMap)
+
+
     let result = dfs(maybeBrokenArr, new Set(), 0);
     return result.sort().join(',');
 
@@ -85,115 +90,121 @@ export default function day24() {
             }
         }
         for(let i = 2; i < 45; ++i) {
-            if(maybeBroken.size && bailEarly) {[definitelyBroken, maybeBrokenMap];}
+            if(maybeBrokenMap.size && bailEarly) { return [definitelyBroken, maybeBrokenMap]; }
 
             let v = `z${i.toString().padStart(2, '0')}`;
-            if(!adjList[v]) { break; }
 
-            function derive(v0, num) {
-                //expected: XOR(XOR(n), NEXT)
-                if(num < 1) {
-                    //TODO
-                    return;
-                }
-
-                let next = adjList[v0];
-                if(next[1] !== 'XOR') {
-                    // console.log(`broke -1 -->${v0}<--:..... (${i})`);
-                    maybeBroken(v0);
-                    return;
-                }
-                
-                let [v1, op, v2] = next;
-                
-                if(!adjList[v1] || !adjList[v2]) {
-                    return maybeBroken(v0);
-                }
-                if(adjList[v2][1] === 'XOR') {
-                    [v1, v2] = [v2, v1];
-                }
-                if(adjList[v2][1] !== 'OR') {
-                    return maybeBroken(v0, v2);
-                }
-                if(adjList[v1][1] !== 'XOR') {
-                    return maybeBroken(v0, v1, v2);//TODO not sure which?!
-                }
-                
-                if(!isXorFor(v1, num)) {
-                    return maybeBroken(v0, v1, v2);
-                }
-
-                //XOR OK... NOW FOR CARRY
-                deriveCarry(v2, num-1);
-            }
-            function deriveCarry(v0, num) {
-                let [v1, op, v2] = adjList[v0];
-
-                if(num === 0) { 
-                    if(isAndFor(v0, num)) {
-                        return;
-                    }
-                    return maybeBroken(v0);
-                }
-
-                if(isAndFor(v2, num)) {
-                    [v2, v1] = [v1, v2];
-                }
-                if(!isAndFor(v1, num)) {
-                    return maybeBroken(v0, v1, v2);
-                }
-
-                deriveCarry2(v2, num);
-            }
-            function isAndFor(v0, num) {
-                if(!adjList[v0]) {
-                    maybeBroken(v0);
-                    return;
-                }
-                let [v1, op, v2] = adjList[v0];
-                if(op !== 'AND' || !(
-                        v1.includes(num.toString().padStart(2, '0')) &&
-                        v2.includes(num.toString().padStart(2, '0')))
-                ) {
-                    return false;
-                }
-
-                return true;
-            }
-            function isXorFor(v0, num) {
-                if(!adjList[v0]) {
-                    maybeBroken(v0);
-                    return;
-                }
-                let [v1, op, v2] = adjList[v0];
-                if(op !== 'XOR' || !(
-                        v1.includes(num.toString().padStart(2, '0')) &&
-                        v2.includes(num.toString().padStart(2, '0')))
-                ) {
-                    return false;
-                }
-
-                return true;
-            }
-            function deriveCarry2(v0, num) {
-                let [v1, op, v2] = adjList[v0];
-                if(op !== 'AND') {
-                    return maybeBroken(v0);
-                }
-
-                if(isXorFor(v2, num)) {
-                    [v1, v2] = [v2, v1];
-                }
-                if(!isXorFor(v1, num)) {
-                    maybeBroken(v0, v1, v2);
-                    return;
-                }
-                deriveCarry(v2, num-1)
-            }
             derive(v, i)
         }
+
         return [definitelyBroken, maybeBrokenMap];   
+
+
+
+        
+        function derive(v0, num) {
+            //expected: XOR(XOR(n), NEXT)
+            if(num < 1) {
+                //TODO
+                return;
+            }
+
+            let next = adjList[v0];
+            if(next[1] !== 'XOR') {
+                // console.log(`broke -1 -->${v0}<--:..... (${i})`);
+                maybeBroken(v0);
+                return;
+            }
+            
+            let [v1, op, v2] = next;
+            
+            if(!adjList[v1] || !adjList[v2]) {
+                return maybeBroken(v0);
+            }
+            if(adjList[v2][1] === 'XOR') {
+                [v1, v2] = [v2, v1];
+            }
+            if(adjList[v2][1] !== 'OR') {
+                return maybeBroken(v0, v2);
+            }
+            if(adjList[v1][1] !== 'XOR') {
+                return maybeBroken(v0, v1, v2);//TODO not sure which?!
+            }
+            
+            if(!isXorFor(v1, num)) {
+                return maybeBroken(v0, v1, v2);
+            }
+
+            //XOR OK... NOW FOR CARRY
+            deriveCarry(v2, num-1);
+        }
+        function deriveCarry(v0, num) {
+            let [v1, op, v2] = adjList[v0];
+
+            if(num === 0) { 
+                if(isAndFor(v0, num)) {
+                    return;
+                }
+                return maybeBroken(v0);
+            }
+
+            if(isAndFor(v2, num)) {
+                [v2, v1] = [v1, v2];
+            }
+            if(!isAndFor(v1, num)) {
+                return maybeBroken(v0, v1, v2);
+            }
+
+            deriveCarry2(v2, num);
+        }
+        function isAndFor(v0, num) {
+            if(!adjList[v0]) {
+                maybeBroken(v0);
+                return;
+            }
+            let [v1, op, v2] = adjList[v0];
+            if(op !== 'AND' || !(
+                    v1.includes(num.toString().padStart(2, '0')) &&
+                    v2.includes(num.toString().padStart(2, '0')))
+            ) {
+                return false;
+            }
+
+            return true;
+        }
+        function isXorFor(v0, num) {
+            if(!adjList[v0]) {
+                maybeBroken(v0);
+                return;
+            }
+            let [v1, op, v2] = adjList[v0];
+            if(op !== 'XOR' || !(
+                    v1.includes(num.toString().padStart(2, '0')) &&
+                    v2.includes(num.toString().padStart(2, '0')))
+            ) {
+                return false;
+            }
+
+            return true;
+        }
+        function deriveCarry2(v0, num) {
+            let [v1, op, v2] = adjList[v0];
+            if(op !== 'AND') {
+                return maybeBroken(v0);
+            }
+
+            if(isXorFor(v2, num)) {
+                [v1, v2] = [v2, v1];
+            }
+            if(!isXorFor(v1, num)) {
+                maybeBroken(v0, v1, v2);
+                return;
+            }
+            deriveCarry(v2, num-1)
+        }
     }
+
+    
 }
 
 console.time()
