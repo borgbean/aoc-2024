@@ -26,7 +26,7 @@ export default function day24() {
     // console.log(maybeBrokenMap)
 
 
-    let result = dfs(maybeBrokenArr, new Set(), 0);
+    let result = dfs(maybeBrokenArr, new Set());
     return result.sort().join(',');
 
     function dfs(maybeBroken, used) {
@@ -88,8 +88,10 @@ export default function day24() {
                     maybeBrokenMap.set(node, (maybeBrokenMap.get(node)??0)+1);
                 }
             }
+
+            return false;
         }
-        for(let i = 2; i < 45; ++i) {
+        for(let i = 0; i < 45; ++i) {
             if(maybeBrokenMap.size && bailEarly) { return [definitelyBroken, maybeBrokenMap]; }
 
             let v = `z${i.toString().padStart(2, '0')}`;
@@ -105,15 +107,16 @@ export default function day24() {
         function derive(v0, num) {
             //expected: XOR(XOR(n), NEXT)
             if(num < 1) {
-                //TODO
-                return;
+                if(!isXorFor(v0, num)) {
+                    return maybeBroken(v0);
+                }
+                return true;
             }
 
             let next = adjList[v0];
             if(next[1] !== 'XOR') {
                 // console.log(`broke -1 -->${v0}<--:..... (${i})`);
-                maybeBroken(v0);
-                return;
+                return maybeBroken(v0);
             }
             
             let [v1, op, v2] = next;
@@ -124,9 +127,6 @@ export default function day24() {
             if(adjList[v2][1] === 'XOR') {
                 [v1, v2] = [v2, v1];
             }
-            if(adjList[v2][1] !== 'OR') {
-                return maybeBroken(v0, v2);
-            }
             if(adjList[v1][1] !== 'XOR') {
                 return maybeBroken(v0, v1, v2);//TODO not sure which?!
             }
@@ -136,15 +136,18 @@ export default function day24() {
             }
 
             //XOR OK... NOW FOR CARRY
-            deriveCarry(v2, num-1);
+            return deriveCarry(v2, num-1);
         }
         function deriveCarry(v0, num) {
             let [v1, op, v2] = adjList[v0];
 
             if(num === 0) { 
                 if(isAndFor(v0, num)) {
-                    return;
+                    return true;
                 }
+                return maybeBroken(v0);
+            }
+            if(op !== 'OR') {
                 return maybeBroken(v0);
             }
 
@@ -155,18 +158,14 @@ export default function day24() {
                 return maybeBroken(v0, v1, v2);
             }
 
-            deriveCarry2(v2, num);
+            return deriveCarry2(v2, num);
         }
         function isAndFor(v0, num) {
             if(!adjList[v0]) {
-                maybeBroken(v0);
-                return;
+                return maybeBroken(v0);
             }
             let [v1, op, v2] = adjList[v0];
-            if(op !== 'AND' || !(
-                    v1.includes(num.toString().padStart(2, '0')) &&
-                    v2.includes(num.toString().padStart(2, '0')))
-            ) {
+            if(op !== 'AND' || !isForNum(v0, num)) {
                 return false;
             }
 
@@ -174,18 +173,21 @@ export default function day24() {
         }
         function isXorFor(v0, num) {
             if(!adjList[v0]) {
-                maybeBroken(v0);
-                return;
+                return maybeBroken(v0);
             }
             let [v1, op, v2] = adjList[v0];
-            if(op !== 'XOR' || !(
-                    v1.includes(num.toString().padStart(2, '0')) &&
-                    v2.includes(num.toString().padStart(2, '0')))
-            ) {
+            if(op !== 'XOR' || !isForNum(v0, num)) {
                 return false;
             }
 
             return true;
+        }
+        function isForNum(v0, num) {
+            let [v1, op, v2] = adjList[v0];
+
+            let digit1 = String.fromCharCode((Math.floor(num/10) % 10) + '0'.charCodeAt(0));
+            let digit2 = String.fromCharCode((num % 10) + '0'.charCodeAt(0));
+            return !(v1[1] !== digit1 || v1[2] !== digit2 || v2[1] !== digit1 || v2[2] !== digit2);
         }
         function deriveCarry2(v0, num) {
             let [v1, op, v2] = adjList[v0];
@@ -197,10 +199,9 @@ export default function day24() {
                 [v1, v2] = [v2, v1];
             }
             if(!isXorFor(v1, num)) {
-                maybeBroken(v0, v1, v2);
-                return;
+                return maybeBroken(v0, v1, v2);
             }
-            deriveCarry(v2, num-1)
+            return deriveCarry(v2, num-1)
         }
     }
 
